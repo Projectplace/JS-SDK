@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Projectplace JS SDK</title>
+    </head>
+    <body>
+        <script src="js/PP-JS-SDK.js" ></script>
+        <script>
+                           
+            PP.init();
+            
+            if(!PP.auth())
+                PP.login();
+                
+            PP.get('user/me/profile.json', {}, function (data) {
+                console.log(data);
+                document.body.innerHTML = data.sort_name;
+            });
+        </script>
+    </body>
+</html>
