@@ -1,6 +1,19 @@
-JS-SDK
+Projectplace JS-SDK
 ======
 
-Point your OAUTH_CALLBACK URL to your channel.html.
+## About
 
-And boom
+Projectplace JS SDK makes developing third-party apps simple eating a banana.
+
+
+## Setup
+
+* Point your PP OAuth Callback to where your index.html is
+
+## Example
+
+An example showing how to get the logged in user's profile:
+
+        PP.get('user/me/profile.json', {}, function (profile) {
+                alert('Welcome ' + profile.sort_name);
+        });    
