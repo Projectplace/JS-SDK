@@ -15,7 +15,6 @@
 */
 var PP = (function(){
 	var counter = 0, head, key, window = this,signatures = {}, initStarter = false;
-	var baseUrl="http://api-beta-test.next.dev.projectplace.com/";
 	function load(url) {
 		var script = document.createElement('script'),
 			done = false;
