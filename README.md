@@ -21,4 +21,8 @@ An example showing how to get the logged in user's profile:
 
         PP.get('user/me/profile.json', {}, function (profile) {
                 alert('Welcome ' + profile.sort_name);
-        });    
+        });
+        
+##Tips
+
+Include "?force_login=1" to the url to force user log in.
