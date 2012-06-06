@@ -8,7 +8,11 @@ Projectplace JS SDK makes developing third-party apps simple eating a banana.
 
 ## Setup
 
-* Point your PP OAuth Callback to where your index.html is
+* Run: git update-index --assume-unchanged js/credentials.js
+This ignores changes you make to the credentials file.
+* Add consumer key and secret to /js/credentials.js
+* Point your PP OAuth Callback to where your index.html is.
+* An go!
 
 ## Example
 
