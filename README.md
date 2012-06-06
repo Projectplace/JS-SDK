@@ -5,6 +5,7 @@ Projectplace JS-SDK
 
 Projectplace JS SDK makes developing third-party apps simple eating a banana.
 
+Uses HTML5 localStorage to store token and secret. If browser doesn't support localStorage Cookies are used.
 
 ## Setup
 
