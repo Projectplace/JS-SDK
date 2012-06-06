@@ -147,7 +147,8 @@ var PP = (function(){
 		init:init,
 		login:login,
 		auth:auth,
-		storeTokenAndLoad:storeTokenAndLoad
+		storeTokenAndLoad:storeTokenAndLoad,
+		getOAuthToken:function () { return getItem('oauth_token') }
 	};
 }());
 
