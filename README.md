@@ -9,7 +9,7 @@ Uses HTML5 localStorage to store token and secret. If browser doesn't support lo
 
 ## Setup
 
-* Run: git update-index --assume-unchanged js/credentials.js
+* Run: "git update-index --assume-unchanged js/credentials.js"
 This ignores changes you make to the credentials file.
 * Add consumer key and secret to /js/credentials.js
 * Point your PP OAuth Callback to where your index.html is.
