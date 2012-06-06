@@ -3,6 +3,7 @@
         <title>Projectplace JS SDK</title>
     </head>
     <body>
+        <script src="js/credentials.js" ></script>
         <script src="js/PP-JS-SDK.js" ></script>
         <script>
                            
@@ -10,11 +11,13 @@
             
             if(!PP.auth())
                 PP.login();
-                
-            PP.get('user/me/profile.json', {}, function (data) {
-                console.log(data);
-                document.body.innerHTML = data.sort_name;
-            });
+            else{
+                PP.get('user/me/profile.json', {}, function (data) {
+                    console.log(data);
+                    document.body.innerHTML = data.sort_name;
+                });    
+            }
+            
         </script>
     </body>
 </html>

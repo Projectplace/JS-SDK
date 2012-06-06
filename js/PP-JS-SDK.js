@@ -1,5 +1,5 @@
 /*
-* Lightweight JSONP OAuth fetcher
+* Projectplace JS SDK
 * Copyright 2010-2012 Jens Andersson. All rights reserved.
 * BSD licensed
 */
@@ -14,12 +14,8 @@
 * });
 */
 var PP = (function(){
-	var counter = 0, head, query, key, window = this, config = {};
+	var counter = 0, head, key, window = this,signatures = {}, initStarter = false;
 	var baseUrl="http://api-beta-test.next.dev.projectplace.com/";
-	var signatures = {
-	    'consumer_key':"",
-	    'shared_secret': ""
-	}
 	function load(url) {
 		var script = document.createElement('script'),
 			done = false;
@@ -51,7 +47,7 @@ var PP = (function(){
 			url = baseUrl + '1/' + url;
 		var jsonp = "json" + (++counter);
 		params.callback = jsonp;
-		
+
 		request = (new OAuthSimple()).sign({path:url,
                                       parameters:params,
                                       signatures:signatures});
@@ -67,40 +63,91 @@ var PP = (function(){
 		load(request.signed_url);
 		return jsonp;
 	}
-	function hasTokenAndSecret(){
-		return getToken() && getSecret();
+	function auth(){
+		return getItem('oauth_token') && !getQueryVariable('force_login');
 	}
-	function getToken() {return getCookie('oauth_token') }
-	function getSecret() {return getCookie('oauth_verifier') }
+	function getSignatures() {
+		return {
+		    'consumer_key':consumer_key,
+		    'shared_secret': consumer_secret,
+		    'access_token' : getToken(),
+		    'access_secret' : getSecret()
+		}
+	}
+	function getToken() {
+		var token = getItem('oauth_token');
+		return token ? token : getItem('request_token');
+	}
+	function getSecret() {
+		var secret = getItem('oauth_verifier');
+		return secret ? secret : getItem('request_verifier');
+	}
 	function init(){
-		signatures.access_token = getToken();
-		signatures.access_secret = getSecret();
+		signatures = getSignatures();
+		storeTokenAndLoad();
 		return this;
+	}
+	function clearSignature() {
+		storeItem('oauth_token',null);
+		storeItem('oauth_verifier',null);
+		storeItem('request_token',null);
+		storeItem('request_verifier',null);
+		signatures = getSignatures();
 	}
 	function login(){
 		self = this;
+		if (initStarter)
+			return;
+		clearSignature();
 		this.get('initiate', {}, (function (url) { return function(response){
-				setCookie('oauth_token', response.oauth_token, 10);
-				setCookie('oauth_verifier', response.oauth_token_secret, 10);
+				storeItem('request_token', response.oauth_token);
+				storeItem('request_verifier', response.oauth_token_secret);
 				window.location = url + "authorize?oauth_token=" + response.oauth_token;
 			}})(baseUrl) );
 	}
-	function storeTokenAndLoad(url){
+	function storeTokenAndLoad(){
 		if(getQueryVariable('oauth_token')){
-		    setCookie('oauth_token', getQueryVariable('oauth_token'), 10);
-		    setCookie('oauth_verifier', getQueryVariable('oauth_verifier'), 10);
-		    this.get('token', {oauth_verifier : getCookie('oauth_verifier')}, function(response){
-			setCookie('oauth_token', response.oauth_token, 365);
-			setCookie('oauth_verifier', response.oauth_token_secret, 365);
-			window.location = url;
+		    initStarter = true;
+		    storeItem('request_token', getQueryVariable('oauth_token'));
+		    storeItem('request_verifier', getQueryVariable('oauth_verifier'));
+		    jsonp('token', {oauth_verifier : getItem('request_verifier')}, function(response){
+			storeItem('oauth_token', response.oauth_token);
+			storeItem('oauth_verifier', response.oauth_token_secret);
+			window.location = './';
 		    })
+		}
+	}
+	function storeItem(key, value){
+		if(supports_html5_storage()){
+			if(value===null)
+				window.localStorage.removeItem(key);
+			else
+				window.localStorage.setItem(key, value);
+		}else{
+			if(value===null)
+				value = '';
+			setCookie(key, value, 365);
+		}
+	}
+	function getItem(key){
+		if(supports_html5_storage()){
+			return window.localStorage.getItem(key);
+		}else{
+			return getCookie(key);
+		}
+	}
+	function supports_html5_storage() {
+		try {
+			return 'localStorage' in window && window['localStorage'] !== null;
+		} catch (e) {
+			return false;
 		}
 	}
 	return {
 		get:jsonp,
 		init:init,
 		login:login,
-		auth:hasTokenAndSecret,
+		auth:auth,
 		storeTokenAndLoad:storeTokenAndLoad
 	};
 }());
